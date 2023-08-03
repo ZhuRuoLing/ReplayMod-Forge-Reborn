@@ -38,6 +38,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FolderPackResources;
 
@@ -269,10 +271,10 @@ public class ReplayMod implements Module, Scheduler {
             Style coloredDarkGray = Style.EMPTY.applyFormat(ChatFormatting.DARK_GRAY);
             Style coloredGold = Style.EMPTY.applyFormat(ChatFormatting.GOLD);
             Style alert = Style.EMPTY.applyFormat(warning ? ChatFormatting.RED : ChatFormatting.DARK_GREEN);
-            Component text = Component.literal("[").setStyle(coloredDarkGray)
-                    .append(Component.translatable("replaymod.title").setStyle(coloredGold))
-                    .append(Component.literal("] "))
-                    .append(Component.translatable(message, args).setStyle(alert));
+            Component text = new TextComponent("[").setStyle(coloredDarkGray)
+                    .append(new TranslatableComponent("replaymod.title").setStyle(coloredGold))
+                    .append(new TextComponent("] "))
+                    .append(new TranslatableComponent(message, args).setStyle(alert));
             // Send message to chat GUI
             // The ingame GUI is initialized at startup, therefore this is possible before the client is connected
             mc.gui.getChat().addMessage(text);

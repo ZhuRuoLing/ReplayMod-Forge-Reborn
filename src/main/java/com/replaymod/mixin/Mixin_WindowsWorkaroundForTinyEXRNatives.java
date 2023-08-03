@@ -15,6 +15,7 @@ import org.lwjgl.system.Library;
 import org.lwjgl.system.Platform;
 import org.lwjgl.util.tinyexr.TinyEXR;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
@@ -36,10 +37,11 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
  */
 @Mixin(value = TinyEXR.class)
 public class Mixin_WindowsWorkaroundForTinyEXRNatives {
+    @Unique
     private static final String LOAD_SYSTEM_CONSUMERS = "Lorg/lwjgl/system/Library;loadSystem(Ljava/util/function/Consumer;Ljava/util/function/Consumer;Ljava/lang/Class;Ljava/lang/String;)V";
 
     //TODO
-    @ModifyArg(method = "<clinit>", at = @At(value = "INVOKE", target = LOAD_SYSTEM_CONSUMERS))
+    @ModifyArg(method = "<clinit>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/system/Library;loadSystem(Ljava/util/function/Consumer;Ljava/util/function/Consumer;Ljava/lang/Class;Ljava/lang/String;)V"))
     private static Class<?> uglyWindowsHacks(Consumer<String> load, Consumer<String> loadLibrary, Class<?> context, String name) throws IOException {
         if (Platform.get() != Platform.WINDOWS) {
             return context; // works out of the box on linux

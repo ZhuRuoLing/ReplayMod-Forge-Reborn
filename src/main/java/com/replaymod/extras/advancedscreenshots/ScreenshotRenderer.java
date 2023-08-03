@@ -53,7 +53,7 @@ public class ScreenshotRenderer implements RenderInfo {
         } catch (OutOfMemoryError e) {
             e.printStackTrace();
             CrashReport report = CrashReport.forThrowable(e, "Creating Equirectangular Screenshot");
-            MCVer.getMinecraft().delayCrashRaw(report);
+            MCVer.getMinecraft().delayCrash(() -> report);
         }
         return false;
     }
@@ -77,7 +77,7 @@ public class ScreenshotRenderer implements RenderInfo {
     @Override
     public float updateForNextFrame() {
         framesDone++;
-        return mc.getPartialTick();
+        return mc.getFrameTime();
     }
 
     @Override

@@ -35,17 +35,20 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatsCounter;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
  * The camera entity used as the main player entity during replay viewing.
@@ -247,8 +250,8 @@ public class CameraEntity
     }
 
     @Override
-    public boolean isEyeInFluidType(FluidType fluid) {
-        return falseUnlessSpectating(entity -> entity.isEyeInFluidType(fluid));
+    public boolean isEyeInFluid(TagKey<Fluid> fluid) {
+        return falseUnlessSpectating(entity -> entity.isEyeInFluid(fluid));
     }
 
     @Override
@@ -381,10 +384,10 @@ public class CameraEntity
         return super.isUsingItem();
     }
 
-    @Override
-    protected void playEquipSound(ItemStack itemStack_1) {
-        // Suppress equip sounds
-    }
+//    @Override
+//    protected void playEquipSound(ItemStack itemStack_1) {
+//        // Suppress equip sounds
+//    }
 
     @Override
     public HitResult pick(double maxDistance, float tickDelta, boolean fluids) {
@@ -462,9 +465,9 @@ public class CameraEntity
     }
 
     @Override
-    public void sendSystemMessage(Component component) {
+    public void sendMessage(Component component, UUID uuid) {
         if (MinecraftForge.EVENT_BUS.post(new ReplayChatMessageEvent(this))) return;
-        super.sendSystemMessage(component);
+        super.sendMessage(component, uuid);
     }
 
     private

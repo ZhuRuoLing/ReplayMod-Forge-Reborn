@@ -50,6 +50,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 
 public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extends AbstractGuiContainer<T> {
@@ -241,7 +242,7 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
     protected class UserInputGuiScreen extends Screen {
 
         UserInputGuiScreen() {
-            super(Component.literal(""));
+            super(new TextComponent(""));
         }
 
         {

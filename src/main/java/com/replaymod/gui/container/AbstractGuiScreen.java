@@ -43,6 +43,7 @@ import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 
 public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends AbstractGuiContainer<T> {
@@ -188,12 +189,12 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
         private boolean active;
 
         protected MinecraftGuiScreen() {
-            super(Component.literal(""));
+            super(new TextComponent(""));
         }
 
         @Override
         public Component getNarrationMessage() {
-            return title == null ? Component.literal("") : title;
+            return title == null ? new TextComponent("") : title;
         }
 
         @Override

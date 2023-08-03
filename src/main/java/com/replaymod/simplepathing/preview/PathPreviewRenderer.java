@@ -76,7 +76,7 @@ public class PathPreviewRenderer extends EventRegistrations {
 			return;
 		Path timePath = timeline.getTimePath();
 		path.update();
-		int renderDistance = ((Integer) mc.options.renderDistance().get()).intValue() * 16;
+		int renderDistance = mc.options.renderDistance * 16;
 		int renderDistanceSquared = renderDistance * renderDistance;
 		Vector3f viewPos = new Vector3f((float) view.getX(), (float) view.getY(), (float) view.getZ());
 		MCVer.pushMatrix();

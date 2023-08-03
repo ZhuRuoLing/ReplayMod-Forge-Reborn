@@ -109,7 +109,7 @@ public class VirtualWindow implements Closeable {
     }
 
     private void applyScaleFactor() {
-        window.setGuiScale(window.calculateScale(mc.options.guiScale().get(), mc.isEnforceUnicode()));
+        window.setGuiScale(window.calculateScale(mc.options.guiScale, mc.isEnforceUnicode()));
     }
 
     public int getFramebufferWidth() {

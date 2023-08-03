@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -126,7 +127,7 @@ public class ResourcePackRecorder {
                     ServerList.saveSingleServer(serverData);
                     mc.setScreen(null);
                 }
-                        , Component.translatable("multiplayer.texturePrompt.line1"), Component.translatable("multiplayer.texturePrompt.line2"))));
+                        , new TranslatableComponent("multiplayer.texturePrompt.line1"), new TranslatableComponent("multiplayer.texturePrompt.line2"))));
             }
         }
 
@@ -149,7 +150,7 @@ public class ResourcePackRecorder {
 			theUrl = new URL(url);
 	    	ClientPackSource packFinder = mc.getClientPackSource();
 	        ((IDownloadingPackFinder) packFinder).setRequestCallback(file -> recordResourcePack(file, requestId));
-	        return packFinder.downloadAndSelectResourcePack(theUrl, hash, true);
+	        return packFinder.downloadAndSelectResourcePack(String.valueOf(theUrl), hash, true);
 		} 
 		catch (MalformedURLException e)
 		{

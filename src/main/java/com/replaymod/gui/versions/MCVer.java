@@ -2,6 +2,7 @@ package com.replaymod.gui.versions;
 
 import java.util.concurrent.Callable;
 
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.Window;
@@ -46,7 +47,7 @@ public class MCVer {
     
     public static Component literalText(String str) 
     {
-    	return Component.literal(str);
+    	return new TextComponent(str);
     }
 
     public static void drawRect(int x, int y, int width, int height, ReadableColor tl, ReadableColor tr, ReadableColor bl, ReadableColor br) {
@@ -64,11 +65,11 @@ public class MCVer {
         return getMinecraft().font;
     }
 
-    public static int getMouseX(ScreenEvent.Render.Post event) {
-        return event.getMouseX();
-    }
+//    public static int getMouseX(ScreenEvent event) {
+//        return event.getMouseX();
+//    }
 
-    public static int getMouseY(ScreenEvent.Render.Post event) {
+    public static int getMouseY(ScreenEvent.DrawScreenEvent.Post event) {
         return event.getMouseY();
     }
 

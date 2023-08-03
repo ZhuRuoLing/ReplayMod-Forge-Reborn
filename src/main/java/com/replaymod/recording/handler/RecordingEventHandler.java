@@ -96,8 +96,8 @@ public class RecordingEventHandler extends EventRegistrations {
                               double x, double y, double z, float volume, float pitch) {
         try {
             // Send to all other players in ServerWorldEventHandler#playSoundToAllNearExcept
-        	Random random = new Random();
-            packetListener.save(new ClientboundSoundPacket(sound, category, x, y, z, volume, pitch, random.nextLong()));
+        	//Random random = new Random();
+            packetListener.save(new ClientboundSoundPacket(sound, category, x, y, z, volume, pitch));
         } catch (Exception e) {
             e.printStackTrace();
         }

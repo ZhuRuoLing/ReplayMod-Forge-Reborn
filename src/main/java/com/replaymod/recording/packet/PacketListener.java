@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.minecraft.network.chat.TextComponent;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -454,7 +455,7 @@ public class PacketListener extends ChannelInboundHandlerAdapter {
             if (msg instanceof ClientboundCustomPayloadPacket) {
             	ClientboundCustomPayloadPacket packet = (ClientboundCustomPayloadPacket) msg;
                 if (Restrictions.PLUGIN_CHANNEL.equals(packet.getName())) {
-                    save(new ClientboundDisconnectPacket(Component.literal("Please update to view this replay.")));
+                    save(new ClientboundDisconnectPacket(new TextComponent("Please update to view this replay.")));
                 }
             }
 

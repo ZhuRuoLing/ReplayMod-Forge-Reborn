@@ -147,9 +147,9 @@ public class CameraPathExporter {
             camera.setPerspective(configure(new CameraPerspective(), perspective -> {
                 float aspectRatio = (float) settings.getVideoWidth() / (float) settings.getVideoHeight();
                 perspective.setAspectRatio(aspectRatio);
-                perspective.setYfov((float) Math.toRadians(mc.options.fov().get()));
+                perspective.setYfov((float) Math.toRadians(mc.options.fov));
                 perspective.setZnear(0.05f);
-                perspective.setZfar((float) mc.options.renderDistance().get() * 16 * 4);
+                perspective.setZfar((float) mc.options.renderDistance * 16 * 4);
             }));
         }));
         glTF.addNodes(configure(new Node(), node -> node.setCamera(0)));

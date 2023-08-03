@@ -176,7 +176,7 @@ class Patterns {
 
     @Pattern
     private static float getRenderPartialTicks(Minecraft mc) {
-        return mc.getPartialTick();
+        return mc.getFrameTime();
     }
 
     @Pattern

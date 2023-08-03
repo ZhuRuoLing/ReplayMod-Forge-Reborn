@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -179,8 +180,8 @@ public class GuiRenderQueue extends AbstractGuiPopup<GuiRenderQueue> implements 
                 LOGGER.error("Rendering video:", e);
                 AlertScreen errorScreen = new AlertScreen(
                         container::display,
-                        Component.translatable("replaymod.gui.rendering.error.title"),
-                        Component.translatable("replaymod.gui.rendering.error.message")
+                        new TranslatableComponent("replaymod.gui.rendering.error.title"),
+                        new TranslatableComponent("replaymod.gui.rendering.error.message")
                 );
                 mc.setScreen(errorScreen);
                 return;

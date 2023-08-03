@@ -40,6 +40,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 
 public abstract class AbstractGuiLabel<T extends AbstractGuiLabel<T>> extends AbstractGuiElement<T> implements IGuiLabel<T> {
     private String text = "";
@@ -57,7 +58,7 @@ public abstract class AbstractGuiLabel<T extends AbstractGuiLabel<T>> extends Ab
     public void draw(GuiRenderer renderer, ReadableDimension size, RenderInfo renderInfo) {
         super.draw(renderer, size, renderInfo);
         Font fontRenderer = MCVer.getFontRenderer();
-        List<String> lines = fontRenderer.getSplitter().splitLines(Component.literal(text), size.getWidth(), Style.EMPTY).stream()
+        List<String> lines = fontRenderer.getSplitter().splitLines(new TextComponent(text), size.getWidth(), Style.EMPTY).stream()
                 .map(it -> it.visit(Optional::of)).filter(Optional::isPresent).map(Optional::get)
                 .collect(Collectors.toList());
         int y = 0;

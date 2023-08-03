@@ -9,6 +9,7 @@ import com.replaymod.gui.versions.Image;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 
 public class NoGuiScreenshot {
@@ -59,8 +60,7 @@ public class NoGuiScreenshot {
                     );
                     mc.getMainRenderTarget().bindWrite(true);
                     RenderSystem.enableTexture();
-
-                    float tickDelta = mc.getPartialTick();
+                    float tickDelta = mc.getDeltaFrameTime();
                     mc.gameRenderer.renderLevel(tickDelta, System.nanoTime(), new PoseStack());
 
                     mc.getMainRenderTarget().unbindWrite();

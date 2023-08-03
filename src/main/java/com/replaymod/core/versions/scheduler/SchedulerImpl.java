@@ -117,7 +117,7 @@ public class SchedulerImpl implements Scheduler {
                 } catch (ReportedException e) {
                     e.printStackTrace();
                     System.err.println(e.getReport().getFriendlyReport());
-                    mc.delayCrashRaw(e.getReport());
+                    mc.delayCrash(e::getReport);
                 } finally {
                     inRunLater = false;
                 }

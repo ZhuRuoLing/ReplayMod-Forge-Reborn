@@ -13,6 +13,7 @@ import com.replaymod.render.utils.ByteBufferPool;
 
 import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class BlendFrameCapturer implements FrameCapturer<BitmapFrame> {
     protected final WorldRenderer worldRenderer;
@@ -38,7 +39,7 @@ public class BlendFrameCapturer implements FrameCapturer<BitmapFrame> {
         renderInfo.updateForNextFrame();
 
         BlendState.getState().preFrame(framesDone);
-        worldRenderer.renderWorld(Minecraft.getInstance().getPartialTick(), null);
+        worldRenderer.renderWorld(Minecraft.getInstance().getFrameTime(), null);
         BlendState.getState().postFrame(framesDone);
 
         BitmapFrame frame = new BitmapFrame(framesDone++, new Dimension(0, 0), 0, ByteBufferPool.allocate(0));

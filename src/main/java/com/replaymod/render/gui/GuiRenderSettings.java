@@ -179,7 +179,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 @Override
                 public void run() {
                     sphericalFovSlider.setText(I18n.get("replaymod.gui.rendersettings.sphericalFov")
-                            + ": " + (MIN_SPHERICAL_FOV + sphericalFovSlider.getValue() * SPHERICAL_FOV_STEP_SIZE) + "¡Æ");
+                            + ": " + (MIN_SPHERICAL_FOV + sphericalFovSlider.getValue() * SPHERICAL_FOV_STEP_SIZE) + "ï¿½ï¿½");
 
                     updateInputs();
                 }
@@ -199,7 +199,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
 
     public final GuiPanel advancedPanel = new GuiPanel().setLayout(new VerticalLayout().setSpacing(15))
             .addElements(null, nametagCheckbox, alphaCheckbox, new GuiPanel().setLayout(
-                    new GridLayout().setCellsEqualSize(false).setColumns(2).setSpacingX(5).setSpacingY(15))
+                            new GridLayout().setCellsEqualSize(false).setColumns(2).setSpacingX(5).setSpacingY(15))
                     .addElements(new GridLayout.Data(0, 0.5),
                             new GuiLabel().setI18nText("replaymod.gui.rendersettings.stabilizecamera"), stabilizePanel,
                             chromaKeyingCheckbox, chromaKeyingColor,
@@ -252,7 +252,7 @@ public class GuiRenderSettings extends AbstractGuiPopup<GuiRenderSettings> {
                 LOGGER.error("Rendering video:", e);
                 getMinecraft().setScreen(new GuiNoFfmpeg(getScreen()::display).toMinecraft());
             } catch (FFmpegWriter.FFmpegStartupException e) {
-                GuiExportFailed.tryToRecover(e, newSettings -> {	
+                GuiExportFailed.tryToRecover(e, newSettings -> {
                     // Update settings with fixed ffmpeg arguments
                     exportArguments.setText(newSettings.getExportArguments());
                     // Restart rendering, this will also save the changed ffmpeg arguments

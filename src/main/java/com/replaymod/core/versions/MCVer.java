@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -155,7 +156,7 @@ public class MCVer {
     }	
 
     public static Optional<AbstractWidget> findButton(Collection<AbstractWidget> buttonList, String text, int id) {
-        final MutableComponent message = Component.translatable(text);
+        final MutableComponent message = new  TranslatableComponent(text);
         for (AbstractWidget b : buttonList) {
             if (message.equals(b.getMessage())) {
                 return Optional.of(b);

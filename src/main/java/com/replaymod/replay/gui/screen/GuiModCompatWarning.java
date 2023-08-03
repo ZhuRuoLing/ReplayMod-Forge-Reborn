@@ -15,6 +15,7 @@ import com.replaymod.replaystudio.data.ModInfo;
 import com.replaymod.replaystudio.util.I18n;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class GuiModCompatWarning extends AbstractGuiScreen<GuiModCompatWarning> {
     public final GuiVerticalList content = new GuiVerticalList(this).setDrawShadow(true).setDrawSlider(true);
@@ -56,7 +57,7 @@ public class GuiModCompatWarning extends AbstractGuiScreen<GuiModCompatWarning> 
                                 .with(new GuiLabel().setI18nText("replaymod.gui.modwarning.id"), null)
                                 .with(new GuiLabel().setText(modInfo.getId()), null).build(),
                                 //TODO
-                        new GuiLabel().setText(Component.translatable("replaymod.gui.modwarning.version.expected")
+                        new GuiLabel().setText(new TranslatableComponent("replaymod.gui.modwarning.version.expected")
                                 + ": " + modInfo.getVersion())
                 ));
             }
@@ -74,9 +75,9 @@ public class GuiModCompatWarning extends AbstractGuiScreen<GuiModCompatWarning> 
                                 .with(new GuiLabel().setI18nText("replaymod.gui.modwarning.id"), null)
                                 .with(new GuiLabel().setText(entry.getKey().getId()), null).build(),
                                 //TODO
-                        new GuiLabel().setText(Component.translatable("replaymod.gui.modwarning.version.expected")
+                        new GuiLabel().setText(new TranslatableComponent("replaymod.gui.modwarning.version.expected")
                                 + ": " + entry.getKey().getVersion()
-                                + ", " + Component.translatable("replaymod.gui.modwarning.version.found")
+                                + ", " + new TranslatableComponent("replaymod.gui.modwarning.version.found")
                                 + ": " + entry.getValue())
                 ));
             }

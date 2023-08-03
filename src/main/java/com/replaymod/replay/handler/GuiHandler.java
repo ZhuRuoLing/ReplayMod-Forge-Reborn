@@ -32,6 +32,7 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 
 public class GuiHandler extends EventRegistrations {
@@ -50,10 +51,10 @@ public class GuiHandler extends EventRegistrations {
 			return;
 		if (this.mod.getReplayHandler() != null) {
 			this.mod.getReplayHandler().getReplaySender().setReplaySpeed(0.0D);
-			MutableComponent mutableText2 = Component.translatable("menu.disconnect");
-			MutableComponent mutableText3 = Component.translatable("gui.advancements");
-			MutableComponent mutableText4 = Component.translatable("gui.stats");
-			MutableComponent mutableText5 = Component.translatable("menu.shareToLan");
+			MutableComponent mutableText2 = new TranslatableComponent("menu.disconnect");
+			MutableComponent mutableText3 = new TranslatableComponent("gui.advancements");
+			MutableComponent mutableText4 = new TranslatableComponent("gui.stats");
+			MutableComponent mutableText5 = new TranslatableComponent("menu.shareToLan");
 			AbstractWidget achievements = null, stats = null;
 			for (AbstractWidget b : new ArrayList<>(buttonList)) {
 				boolean remove = false;
@@ -228,7 +229,7 @@ public class GuiHandler extends EventRegistrations {
 
 		public InjectedButton(Screen guiScreen, int buttonId, int x, int y, int width, int height, String buttonText,
 				Consumer<InjectedButton> onClick) {
-			super(x, y, width, height, Component.translatable(buttonText), self -> onClick.accept((InjectedButton) self));
+			super(x, y, width, height, new TranslatableComponent(buttonText), self -> onClick.accept((InjectedButton) self));
 			this.guiScreen = guiScreen;
 			this.id = buttonId;
 			this.onClick = onClick;

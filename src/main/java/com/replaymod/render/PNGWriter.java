@@ -43,7 +43,7 @@ public class PNGWriter implements FrameConsumer<BitmapFrame> {
                         image.writePNG(outputFolder.resolve(depthFrame.getFrameId() + ".depth.png").toFile()));
             }
         } catch (Throwable t) {
-            MCVer.getMinecraft().delayCrashRaw(CrashReport.forThrowable(t, "Exporting EXR frame"));
+            MCVer.getMinecraft().delayCrash(() -> CrashReport.forThrowable(t, "Exporting EXR frame"));
         } finally {
             channels.values().forEach(it -> ByteBufferPool.release(it.getByteBuffer()));
         }

@@ -10,8 +10,8 @@ import net.minecraftforge.network.NetworkRegistry;
 
 @Mixin(NetworkRegistry.class)
 public interface NetworkRegistryAccessor {
-    @Invoker("gatherLoginPayloads")
-    static List<NetworkRegistry.LoginPayload> invokeGatherLoginPayloads(NetworkDirection direction, boolean isLocal) {
-        throw new AssertionError();
-    }
+//    @Invoker("gatherLoginPayloads")
+//    static List<NetworkRegistry.LoginPayload> invokeGatherLoginPayloads(NetworkDirection direction, boolean isLocal) {
+//        throw new AssertionError();
+//    }
 }

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -168,8 +169,8 @@ public class GuiReplayViewer extends GuiScreen {
                     getMinecraft().setScreen(new AlertScreen(
                             //#if MC>=11400
                             GuiReplayViewer.this::display,
-                            Component.translatable("replaymod.gui.viewer.delete.failed1"),
-                            Component.translatable("replaymod.gui.viewer.delete.failed2")
+                            new TranslatableComponent("replaymod.gui.viewer.delete.failed1"),
+                            new TranslatableComponent("replaymod.gui.viewer.delete.failed2")
                             //#else
                             //$$ I18n.format("replaymod.gui.viewer.delete.failed1"),
                             //$$ I18n.format("replaymod.gui.viewer.delete.failed2")

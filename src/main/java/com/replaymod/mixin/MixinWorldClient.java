@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,11 +30,12 @@ public abstract class MixinWorldClient extends Level implements RecordingEventHa
     @Shadow
     private Minecraft minecraft;
 
-    protected MixinWorldClient(WritableLevelData mutableWorldProperties, ResourceKey<Level> registryKey, Holder<DimensionType> dimensionType, Supplier<ProfilerFiller> profiler, boolean bl, boolean bl2, long l, int p_220359_) {
+    protected MixinWorldClient(WritableLevelData mutableWorldProperties, ResourceKey<Level> registryKey, Holder<DimensionType> dimensionType, Supplier<ProfilerFiller> profiler, boolean bl, boolean bl2, long l) {
         super(mutableWorldProperties, registryKey,
-                dimensionType, profiler, bl, bl2, l, p_220359_);
+                dimensionType, profiler, bl, bl2, l);
     }
 
+    @Unique
     private RecordingEventHandler replayModRecording_getRecordingEventHandler() {
         return ((RecordingEventHandler.RecordingEventSender) this.minecraft.levelRenderer).getRecordingEventHandler();
     }
@@ -42,21 +44,20 @@ public abstract class MixinWorldClient extends Level implements RecordingEventHa
     // but are instead played directly by the client. The server only sends these sounds to
     // other clients so we have to record them manually.
     // E.g. Block place sounds
-    @Inject(method = "playSeededSound(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFJ)V",
+    @Inject(method = "playSound(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V",
             at = @At("HEAD"))
-    public void replayModRecording_recordClientSound(Player player, double x, double y, double z, SoundEvent sound, SoundSource category,
-                                                     float volume, float pitch, long p_233629_, CallbackInfo ci) {
-        if (player == this.minecraft.player) {
+    public void replayModRecording_recordClientSound(Player p_104645_, double p_104646_, double p_104647_, double p_104648_, SoundEvent p_104649_, SoundSource p_104650_, float p_104651_, float p_104652_, CallbackInfo ci) {
+        if (p_104645_ == this.minecraft.player) {
             RecordingEventHandler handler = replayModRecording_getRecordingEventHandler();
             if (handler != null) {
-                handler.onClientSound(sound, category, x, y, z, volume, pitch);
+                handler.onClientSound(p_104649_, p_104650_, p_104646_, p_104647_, p_104648_, p_104651_, p_104652_);
             }
         }
     }
 
     //TODO
     // Same goes for level events (also called effects). E.g. door open, block break, etc.
-    @Inject(method = "syncWorldEvent", at = @At("HEAD"))
+    @Inject(method = "levelEvent", at = @At("HEAD"))
     private void playLevelEvent(Player player, int type, BlockPos pos, int data, CallbackInfo ci) {
         if (player == this.minecraft.player) {
             // We caused this event, the server won't send it to us

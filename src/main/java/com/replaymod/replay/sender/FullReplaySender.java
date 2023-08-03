@@ -1,26 +1,5 @@
 package com.replaymod.replay.sender;
 
-import static com.replaymod.core.versions.MCVer.getMinecraft;
-import static com.replaymod.core.versions.MCVer.getPacketTypeRegistry;
-import static com.replaymod.core.versions.MCVer.setServerResourcePack;
-import static com.replaymod.replaystudio.util.Utils.readInt;
-
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.tcp.io.ByteBufNetOutput;
 import com.google.common.base.Preconditions;
@@ -40,7 +19,6 @@ import com.replaymod.replay.Setting;
 import com.replaymod.replay.camera.CameraEntity;
 import com.replaymod.replaystudio.io.ReplayInputStream;
 import com.replaymod.replaystudio.replay.ReplayFile;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
@@ -55,41 +33,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundAddExperienceOrbPacket;
-import net.minecraft.network.protocol.game.ClientboundAddPlayerPacket;
-import net.minecraft.network.protocol.game.ClientboundAwardStatsPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
-import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
-import net.minecraft.network.protocol.game.ClientboundHorseScreenOpenPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
-import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerChatHeaderPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundResourcePackPacket;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
-import net.minecraft.network.protocol.game.ClientboundSelectAdvancementsTabPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
-import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
-import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket;
-import net.minecraft.network.protocol.game.ClientboundUpdateRecipesPacket;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -97,6 +44,20 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.replaymod.core.versions.MCVer.*;
+import static com.replaymod.replaystudio.util.Utils.readInt;
 
 /**
  * Sends replay packets to netty channels.
@@ -109,9 +70,9 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
      * These packets are ignored completely during replay.
      */
     private static final List<Class<?>> BAD_PACKETS = Arrays.<Class<?>>asList(
-    		//TODO
-    		ServerboundPlayerActionPacket.class,
-    		ClientboundOpenBookPacket.class,
+            //TODO
+            ServerboundPlayerActionPacket.class,
+            ClientboundOpenBookPacket.class,
             ClientboundOpenScreenPacket.class,
             ClientboundUpdateRecipesPacket.class,
             ClientboundUpdateAdvancementsPacket.class,
@@ -361,16 +322,16 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                     if (p != null) {
                         super.channelRead(ctx, p);
                     }
-                    
+
                     maybeRemoveDeadEntities(p);
 
                     if (p instanceof ClientboundLevelChunkPacketData) {
                         Runnable doLightUpdates = () -> {
-                        	ClientLevel world = mc.level;
+                            ClientLevel world = mc.level;
                             if (world != null) {
                                 while (!world.isLightUpdateQueueEmpty())
-                                    world.pollLightUpdates(); 
-                            	LevelLightEngine provider = world.getChunkSource().getLightEngine();
+                                    world.pollLightUpdates();
+                                LevelLightEngine provider = world.getChunkSource().getLightEngine();
                                 while (provider.hasLightWork()) {
                                     provider.runUpdates(Integer.MAX_VALUE, true, true);
                                 }
@@ -390,15 +351,15 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         }
 
     }
-    
+
     private void maybeRemoveDeadEntities(Packet<?> packet) {
         if (asyncMode) {
             return; // MC should have enough time to tick
         }
 
         boolean relevantPacket = packet instanceof ClientboundAddPlayerPacket
-        		|| packet instanceof ClientboundAddEntityPacket
-        		|| packet instanceof ClientboundAddExperienceOrbPacket
+                || packet instanceof ClientboundAddEntityPacket
+                || packet instanceof ClientboundAddExperienceOrbPacket
                 || packet instanceof ClientboundRemoveEntitiesPacket;
         if (!relevantPacket) {
             return; // don't want to do it too often, only when there's likely to be a dead entity
@@ -433,7 +394,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
             return p;
         }
         if (p instanceof ClientboundCustomPayloadPacket) {
-        	ClientboundCustomPayloadPacket packet = (ClientboundCustomPayloadPacket) p;
+            ClientboundCustomPayloadPacket packet = (ClientboundCustomPayloadPacket) p;
             if (Restrictions.PLUGIN_CHANNEL.equals(packet.getName())) {
                 final String unknown = replayHandler.getRestrictions().handle(packet);
                 if (unknown == null) {
@@ -450,15 +411,15 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                         }
                         mc.setScreen(new AlertScreen(
                                 () -> mc.setScreen(null),
-                                Component.translatable("replaymod.error.unknownrestriction1"),
-                                Component.translatable("replaymod.error.unknownrestriction2", unknown)
+                                new TranslatableComponent("replaymod.error.unknownrestriction1"),
+                                new TranslatableComponent("replaymod.error.unknownrestriction2", unknown)
                         ));
                     });
                 }
             }
         }
         if (p instanceof ClientboundDisconnectPacket) {
-        	Component reason = ((ClientboundDisconnectPacket) p).getReason();
+            Component reason = ((ClientboundDisconnectPacket) p).getReason();
             String message = reason.getString();
             if ("Please update to view this replay.".equals(message)) {
                 // This version of the mod supports replay restrictions so we are allowed
@@ -470,7 +431,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         if (BAD_PACKETS.contains(p.getClass())) return null;
 
         if (p instanceof ClientboundResourcePackPacket) {
-        	ClientboundResourcePackPacket packet = (ClientboundResourcePackPacket) p;
+            ClientboundResourcePackPacket packet = (ClientboundResourcePackPacket) p;
             String url = packet.getUrl();
             if (url.startsWith("replay://")) {
                 int id = Integer.parseInt(url.substring("replay://".length()));
@@ -490,16 +451,17 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         }
 
         if (p instanceof ClientboundLoginPacket) {
-        	ClientboundLoginPacket packet = (ClientboundLoginPacket) p;
+            ClientboundLoginPacket packet = (ClientboundLoginPacket) p;
             int entId = packet.playerId();
             allowMovement = true;
             actualID = entId;
             entId = -1789435; // Camera entity id should be negative which is an invalid id and can't be used by servers
-            p = new ClientboundLoginPacket(entId, packet.hardcore(), GameType.SPECTATOR, GameType.SPECTATOR, packet.levels(), packet.registryHolder(), packet.dimensionType(), packet.dimension(), packet.seed(), 0, packet.chunkRadius(), packet.simulationDistance(), packet.reducedDebugInfo(), packet.showDeathScreen(), packet.isDebug(), packet.isFlat(), Optional.empty());
+            p = new ClientboundLoginPacket(entId, packet.hardcore(), GameType.SPECTATOR, GameType.SPECTATOR, packet.levels(), packet.registryHolder(), packet.dimensionType(), packet.dimension(), packet.seed(), packet.maxPlayers(), packet.chunkRadius(), packet.simulationDistance(), packet.reducedDebugInfo(), packet.showDeathScreen(), packet.isDebug(), packet.isFlat());
+            //p = new ClientboundLoginPacket(entId, packet.hardcore(), GameType.SPECTATOR, GameType.SPECTATOR, packet.levels(), packet.registryHolder(), packet.dimensionType(), packet.dimension(), packet.seed(), 0, packet.chunkRadius(), packet.simulationDistance(), packet.reducedDebugInfo(), packet.showDeathScreen(), packet.isDebug(), packet.isFlat(), Optional.empty());
         }
 
         if (p instanceof ClientboundRespawnPacket) {
-        	ClientboundRespawnPacket respawn = (ClientboundRespawnPacket) p;
+            ClientboundRespawnPacket respawn = (ClientboundRespawnPacket) p;
             p = new ClientboundRespawnPacket(
                     respawn.getDimensionType(),
                     respawn.getDimension(),
@@ -508,7 +470,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                     GameType.SPECTATOR,
                     respawn.isDebug(),
                     respawn.isFlat(),
-                    respawn.shouldKeepAllPlayerData(), respawn.getLastDeathLocation()
+                    respawn.shouldKeepAllPlayerData()
             );
 
             allowMovement = true;
@@ -533,7 +495,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                 if (relative == ClientboundPlayerPositionPacket.RelativeArgument.X
                         || relative == ClientboundPlayerPositionPacket.RelativeArgument.Y
                         || relative == ClientboundPlayerPositionPacket.RelativeArgument.Z) {
-                	return null;
+                    return null;
                 }
             }
 
@@ -560,14 +522,14 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
             }.run();
         }
 
-        if(p instanceof ClientboundGameEventPacket) {
-        	ClientboundGameEventPacket pg = (ClientboundGameEventPacket)p;
+        if (p instanceof ClientboundGameEventPacket) {
+            ClientboundGameEventPacket pg = (ClientboundGameEventPacket) p;
             if (!Arrays.asList(
                     //#if MC>=11600
-            		ClientboundGameEventPacket.START_RAINING,
-            		ClientboundGameEventPacket.STOP_RAINING,
-            		ClientboundGameEventPacket.RAIN_LEVEL_CHANGE,
-            		ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE
+                    ClientboundGameEventPacket.START_RAINING,
+                    ClientboundGameEventPacket.STOP_RAINING,
+                    ClientboundGameEventPacket.RAIN_LEVEL_CHANGE,
+                    ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE
                     //#else
                     //$$ 1,
                     //$$ 2,
@@ -578,7 +540,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                 return null;
             }
         }
-        if (p instanceof ClientboundSystemChatPacket || p instanceof ClientboundPlayerChatPacket || p instanceof ClientboundPlayerChatHeaderPacket) {
+        if (p instanceof ClientboundChatPacket) {
             if (!ReplayModReplay.instance.getCore().getSettingsRegistry().get(Setting.SHOW_CHAT)) {
                 return null;
             }
@@ -827,7 +789,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
             if (p instanceof ClientboundLevelParticlesPacket) return null;
 
             if (p instanceof ClientboundAddEntityPacket) {
-            	ClientboundAddEntityPacket pso = (ClientboundAddEntityPacket) p;
+                ClientboundAddEntityPacket pso = (ClientboundAddEntityPacket) p;
                 if (pso.getType() == EntityType.FIREWORK_ROCKET) return null;
             }
         }
@@ -845,8 +807,8 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
      * @param timestamp The timestamp in milliseconds since the beginning of this replay
      */
     private final ExecutorService syncSender = Executors.newSingleThreadExecutor(runnable ->
-    new Thread(runnable, "replaymod-sync-sender"));
-    
+            new Thread(runnable, "replaymod-sync-sender"));
+
     @Override
     public void sendPacketsTill(int timestamp) {
         Preconditions.checkState(!asyncMode, "This method cannot be used in async mode. Use jumpToTime(int) instead.");
@@ -878,13 +840,12 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         // Everything has been sent, drain the queue one last time
         executeTaskQueue();
     }
-    
-    private void executeTaskQueue() 
-    {
+
+    private void executeTaskQueue() {
         ((MinecraftMethodAccessor) mc).replayModExecuteTaskQueue();
         ReplayMod.instance.runTasks();
     }
-    
+
     private void doSendPacketsTill(int timestamp) {
         try {
             while (ctx == null && !terminate) { // Make sure channel is ready
@@ -954,7 +915,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
 
     protected Packet processPacketSync(Packet p) {
         if (p instanceof ClientboundForgetLevelChunkPacket) {
-        	ClientboundForgetLevelChunkPacket packet = (ClientboundForgetLevelChunkPacket) p;
+            ClientboundForgetLevelChunkPacket packet = (ClientboundForgetLevelChunkPacket) p;
             int x = packet.getX();
             int z = packet.getZ();
             // If the chunk is getting unloaded, we will have to forcefully update the position of all entities
@@ -974,9 +935,9 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
                 List<Entity> entitiesInChunk = new ArrayList<>();
                 //#else
                 for (Entity entity : mc.level.entitiesForRendering()) {
-                	if (entity.chunkPosition().equals(chunk.getPos())) {
-             	  		entitiesInChunk.add(entity);
-                	}
+                    if (entity.chunkPosition().equals(chunk.getPos())) {
+                        entitiesInChunk.add(entity);
+                    }
                 }
                 //#endif
                 for (Entity entity : entitiesInChunk) {
@@ -988,7 +949,7 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         }
         return p; // During synchronous playback everything is sent normally
     }
-    
+
     private void forcePositionForVehicleAndSelf(Entity entity) {
         Entity vehicle = entity.getVehicle();
         if (vehicle != null) {
@@ -1002,7 +963,8 @@ public class FullReplaySender extends ChannelDuplexHandler implements ReplaySend
         do {
             prevPos = entity.position();
             if (vehicle != null) {
-                entity.rideTick();;
+                entity.rideTick();
+                ;
             } else {
                 entity.tick();
             }

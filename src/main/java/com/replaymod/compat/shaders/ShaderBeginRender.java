@@ -4,6 +4,7 @@ import com.replaymod.core.events.PreRenderCallback;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.render.hooks.EntityRendererHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -33,7 +34,7 @@ public class ShaderBeginRender extends EventRegistrations {
 
             ShaderReflection.shaders_beginRender.invoke(null, mc,
                     mc.gameRenderer.getMainCamera(),
-                    mc.getPartialTick(), 0);
+                    mc.getFrameTime(), 0);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

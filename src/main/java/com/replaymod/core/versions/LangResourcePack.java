@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.ResourcePackFileNotFoundException;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -109,24 +110,30 @@ public class LangResourcePack extends AbstractPackResources {
         return langPath != null && Files.exists(langPath);
     }
 
+//    @Override
+//    public Collection<ResourceLocation> getResources(PackType p_10284_, String p_10285_, String p_10286_, int p_10287_, Predicate<String> p_10288_) {
+//        return null;
+//    }
+
 
     @Override
-    public Collection<ResourceLocation> getResources(
-    		PackType resourcePackType,
-            String namespace,
-            String path,
-            Predicate<ResourceLocation> filter
+    public @NotNull Collection<ResourceLocation> getResources(
+            @NotNull PackType resourcePackType,
+            @NotNull String namespace,
+            @NotNull String path,
+            int maxDepth,
+            @NotNull Predicate<String> filter
     ) {
         if (resourcePackType == PackType.CLIENT_RESOURCES && "lang".equals(path)) {
             Path base = baseLangPath();
             try {
-                return Files.walk(base, 1)
+                return Files.walk(base, maxDepth)
                         .skip(1)
                         .filter(Files::isRegularFile)
                         .map(Path::getFileName).map(Path::toString)
                         .map(LANG_FILE_NAME_PATTERN::matcher)
                         .filter(Matcher::matches)
-                        .map(matcher -> new ResourceLocation(String.format("%s_%s.json", matcher.group(1), matcher.group(1))))
+                        .map(matcher -> new ResourceLocation(String.format("%s_%s.json", matcher.group(1), matcher.group(1))).toString())
                         .filter(filter::test)
                         .map(name -> new ResourceLocation(ReplayMod.MOD_ID, "lang/" + name))
                         .collect(Collectors.toList());
