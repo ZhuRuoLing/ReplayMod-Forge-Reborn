@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
  * the context class passed to Library.loadSystem (which it uses to find dlls in jars) with Library (which is on the
  * system class loader) so it cannot find the dll in our jar and falls back to using System.loadLibrary.
  */
-@Mixin(value = TinyEXR.class)
+@Mixin(value = TinyEXR.class, remap = false)
 public class Mixin_WindowsWorkaroundForTinyEXRNatives {
     @Unique
     private static final String LOAD_SYSTEM_CONSUMERS = "Lorg/lwjgl/system/Library;loadSystem(Ljava/util/function/Consumer;Ljava/util/function/Consumer;Ljava/lang/Class;Ljava/lang/String;)V";

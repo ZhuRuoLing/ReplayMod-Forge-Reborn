@@ -3,6 +3,8 @@ A Minecraft mod to record game sessions and replay them afterwards from any pers
 
 This repo contains ReplayMod-Forge-Reborn for Minecraft 1.18.2  
 
+### **THIS MOD MIGHT CONFLICT WITH OPTIFINE**
+
 ## Building
 Make sure your sub-projects are up-to-date: `git submodule update --init --recursive`
 

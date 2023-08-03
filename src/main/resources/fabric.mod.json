@@ -33,7 +33,6 @@
     ]
   },
   "mixins": [
-    "mixins.jgui.json",
     "mixins.nonmmlauncher.replaymod.json"
   ],
 
