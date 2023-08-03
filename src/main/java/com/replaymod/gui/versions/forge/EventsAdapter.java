@@ -29,7 +29,7 @@ public class EventsAdapter extends EventRegistrations {
     }
 
     @SubscribeEvent
-    public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
+    public void onGuiInit(ScreenEvent.InitScreenEvent event) {
         InitScreenCallback.EVENT.invoker().initScreen(getScreen(event), getButtonList(event));
     }
 

@@ -14,11 +14,13 @@ import com.replaymod.core.gui.GuiReplayButton;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.gui.container.GuiScreen;
 import com.replaymod.gui.container.VanillaGuiScreen;
+import com.replaymod.gui.element.GuiButton;
 import com.replaymod.gui.element.GuiElement;
 import com.replaymod.gui.element.GuiTooltip;
 import com.replaymod.gui.layout.CustomLayout;
 import com.replaymod.gui.utils.EventRegistrations;
 import com.replaymod.gui.versions.callbacks.InitScreenCallback;
+import com.replaymod.gui.versions.forge.EventsAdapter;
 import com.replaymod.replay.ReplayModReplay;
 import com.replaymod.replay.Setting;
 import com.replaymod.replay.gui.screen.GuiReplayViewer;
@@ -113,25 +115,24 @@ public class GuiHandler extends EventRegistrations {
 				.getSettingsRegistry().get(Setting.MAIN_MENU_BUTTON));
 		if (buttonPosition != MainMenuButtonPosition.BIG && !isCustomMainMenuMod) {
 			VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(guiScreen);
-			final GuiReplayButton replayButton = new GuiReplayButton();
-			(replayButton.onClick(() -> (new GuiReplayViewer(this.mod)).display())).setTooltip(
-					(new GuiTooltip()).setI18nText("replaymod.gui.replayviewer", new Object[0]));
-			(vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
+			final GuiButton replayButton = new GuiReplayButton().onClick(() -> (new GuiReplayViewer(this.mod)).display())
+					.setTooltip(new GuiTooltip().setI18nText("replaymod.gui.replayviewer"));
+			vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
 				private Point pos;
-
 				protected void layout(GuiScreen container, int width, int height) {
 					if (this.pos == null)
 						this.pos = GuiHandler.this.determineButtonPos(buttonPosition, guiScreen, buttonList);
 					size(replayButton, 20, 20);
 					pos(replayButton, this.pos.getX(), this.pos.getY());
 				}
-			})).addElements(null, new GuiElement[] { replayButton });
+			}).addElements(null, replayButton);
 			return;
 		}
 		int x = guiScreen.width / 2 - 100;
 		int y = (((MCVer.findButton(buttonList, "menu.online", 14).map(Optional::of)
 				.orElse(MCVer.findButton(buttonList, "menu.multiplayer", 2))).map(it -> Integer.valueOf(it.y)))
 				.orElse(Integer.valueOf(guiScreen.height / 4 + 10 + 96))).intValue();
+		System.out.printf("button at %d %d%n", x,y);
 		moveAllButtonsInRect(buttonList, x, x + 200, -2147483648, y, -24);
 		InjectedButton button = new InjectedButton(guiScreen, 17890234, x, y, 200, 20, "replaymod.gui.replayviewer",
 				this::onButton);

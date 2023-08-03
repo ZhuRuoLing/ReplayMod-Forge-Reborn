@@ -91,12 +91,7 @@ public class GuiFileChooserPopup extends AbstractGuiPopup<GuiFileChooserPopup> i
                 acceptButton.onClick();
             }
         }
-    }).onTextChanged(new com.replaymod.gui.utils.Consumer<String>() {
-        @Override
-        public void consume(String oldName) {
-            updateButton();
-        }
-    }).setMaxLength(Integer.MAX_VALUE);
+    }).onTextChanged(oldName -> updateButton()).setMaxLength(Integer.MAX_VALUE);
 
     private final com.replaymod.gui.element.GuiButton acceptButton = new com.replaymod.gui.element.GuiButton(popup).onClick(new Runnable() {
         @Override
