@@ -113,21 +113,21 @@ public class GuiHandler extends EventRegistrations {
 		boolean isCustomMainMenuMod = guiScreen.getClass().getName().endsWith("custommainmenu.gui.GuiFakeMain");
 		final MainMenuButtonPosition buttonPosition = MainMenuButtonPosition.valueOf(this.mod.getCore()
 				.getSettingsRegistry().get(Setting.MAIN_MENU_BUTTON));
-		if (buttonPosition != MainMenuButtonPosition.BIG && !isCustomMainMenuMod) {
-			VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(guiScreen);
-			final GuiButton replayButton = new GuiReplayButton().onClick(() -> (new GuiReplayViewer(this.mod)).display())
-					.setTooltip(new GuiTooltip().setI18nText("replaymod.gui.replayviewer"));
-			vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
-				private Point pos;
-				protected void layout(GuiScreen container, int width, int height) {
-					if (this.pos == null)
-						this.pos = GuiHandler.this.determineButtonPos(buttonPosition, guiScreen, buttonList);
-					size(replayButton, 20, 20);
-					pos(replayButton, this.pos.getX(), this.pos.getY());
-				}
-			}).addElements(null, replayButton);
-			return;
-		}
+//		if (buttonPosition != MainMenuButtonPosition.BIG && !isCustomMainMenuMod) {
+//			VanillaGuiScreen vanillaGui = VanillaGuiScreen.wrap(guiScreen);
+//			final GuiButton replayButton = new GuiReplayButton().onClick(() -> (new GuiReplayViewer(this.mod)).display())
+//					.setTooltip(new GuiTooltip().setI18nText("replaymod.gui.replayviewer"));
+//			vanillaGui.setLayout(new CustomLayout<GuiScreen>(vanillaGui.getLayout()) {
+//				private Point pos;
+//				protected void layout(GuiScreen container, int width, int height) {
+//					if (this.pos == null)
+//						this.pos = GuiHandler.this.determineButtonPos(buttonPosition, guiScreen, buttonList);
+//					size(replayButton, 20, 20);
+//					pos(replayButton, this.pos.getX(), this.pos.getY());
+//				}
+//			}).addElements(null, replayButton);
+//			return;
+//		}
 		int x = guiScreen.width / 2 - 100;
 		int y = (((MCVer.findButton(buttonList, "menu.online", 14).map(Optional::of)
 				.orElse(MCVer.findButton(buttonList, "menu.multiplayer", 2))).map(it -> Integer.valueOf(it.y)))
